@@ -1,5 +1,5 @@
 from __future__ import division, print_function
-import numpy as np 
+import numpy as np
 import pandas as pd
 
 from tqdm import tqdm
@@ -15,8 +15,6 @@ from scipy.special import erf
 # tess_aper = 4.0 * tess_scale  # 4 pixel aperture
 # tess_srad = 10.0 * tess_scale  # 10 pixel search radius
 # tess_sigma = tess_fwhm / (2.0 * np.sqrt(2.0 * np.log(2)))  # by definition
-
-
 
 
 class CalculateContamination(object):
@@ -100,7 +98,7 @@ class CalculateContamination(object):
 
         cont = 0.25 * contx * conty
 
-        cflx = cont * self.nearbyCat.loc[:,'tflux']
+        cflx = cont * self.nearbyCat.loc[:, 'tflux']
 
         self.totalContamFlux = np.sum(cflx)
         self.fluxRatio = self.totalContamFlux / self.starParams.loc[:, 'tflux']
@@ -159,7 +157,6 @@ if __name__ == '__main__':
     with warnings.catch_warnings():
         warnings.simplefilter('error')
 
-
         # ticid = 88416102
         ticloc = 'tic_at_50_minus30.h5'
         TIC = pd.read_hdf(ticloc)
@@ -170,12 +167,15 @@ if __name__ == '__main__':
         # C.findContamSingle(starParams, TIC)#, psfFwhm=5.0)
         # print(C.fluxRatio)
 
-        #let's trying calculating for high priority stars
+        # let's trying calculating for high priority stars
         pr = TIC.PRIORITY.argsort()[::-1]
 
-        width_factors = [1.0, 1.1, 1.2, 1.3, 1.5, 2.0, 3.0, 5.0] 
+        width_factors = [1.0, 1.1, 1.2, 1.3, 1.5, 2.0, 3.0, 5.0]
 
-        dfout = pd.DataFrame(np.zeros([len(width_factors),4000]))
+        # output columns
+        cols = ['w1.0', 'w1.1', 'w1.2', 'w1.3', 'w1.5', 'w2.0', 'w3.0', 'w5.0']
+        dfout = pd.DataFrame(
+            np.zeros([4000, len(width_factors)]), columns=cols)
 
         psf0 = 1.88
         for i, w in enumerate(width_factors):
@@ -185,20 +185,32 @@ if __name__ == '__main__':
                 C = CalculateContamination()
                 C.findContamSingle(starParams, TIC, psfFwhm=psf0 * w)
                 fr1 = C.fluxRatio.copy()
-                dfout.iloc[i,j] = fr1.values
+                dfout.iloc[j, i] = fr1.values
 
+        for j, ticid in tqdm(
+                enumerate(TIC.loc[:, 'TICID'].iloc[pr][0:4000])):
+            starParams = TIC.loc[TIC.loc[:, 'TICID'] == ticid]
+            dfout.loc[j, 'TESSMAG'] = starParams.loc[:, 'TESSMAG'].values
+            dfout.loc[j, 'RA_DEG'] = starParams.loc[:, 'RA_DEG'].values
+            dfout.loc[j, 'DEC_DEG'] = starParams.loc[:, 'DEC_DEG'].values
+            dfout.loc[j, 'TEFF'] = starParams.loc[:, 'TEFF'].values
+            dfout.loc[j, 'RADIUS'] = starParams.loc[:, 'RADIUS'].values
+            dfout.loc[j, 'TICID'] = ticid
 
+        dfout.to_hdf('contamfile.h5', key='data', mode='w')
 
-                # C = CalculateContamination()
-                # C.findContamSingle(starParams, TIC, psfFwhm=3.6)
-                # fr2 = C.fluxRatio.copy()
-                # # # print([fr1.values, fr2.values])
-                # # if ((1-fr1)/(1-fr2)).values > 1.01:
-                # #     print(((1-fr1)/(1-fr2)).values)
-            #     # #     i +=1
+    q = np.array([])
 
-            # print()
-            # print(i)
+    for j, ticid in tqdm(
+            enumerate(TIC.loc[:, 'TICID'][0:4000])):
+        starParams = TIC.loc[TIC.loc[:, 'TICID'] == ticid]
+        C = CalculateContamination()
+        C.findContamSingle(starParams, TIC, psfFwhm=psf0 * 2.0)
+        c1 = C.fluxRatio.copy()
+        C.findContamSingle(starParams, TIC, psfFwhm=psf0 * 1.0)
+        c2 = C.fluxRatio.copy()
+        q = np.r_[q, (1+c1) / (1+c2)]
+
 
 
 
