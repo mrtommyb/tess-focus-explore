@@ -1,13 +1,16 @@
+import numpy as np
+
+
 
 def calctmagv(v, j, k, ve = None, je = None, ke = None):
     ''' calculate tess magnitudes from V and JHK
         Guillermo Torres private email 5/27/2016
     '''
-    
+
     def sccalctmagv(v, j, k, ve, je, ke):
         if v is None or j is None or k is None:
             return (None, None, None)
-        
+
         if ve is None:
             ve = 0.0
         if je is None:
@@ -15,12 +18,12 @@ def calctmagv(v, j, k, ve = None, je = None, ke = None):
         if ke is None:
             ke = 0.0
 
-        vk  = v - k
-        vke = sqrt(ve**2 + ke**2)
-        t   = j + 0.0293 + 0.38523 * vk - 0.01862 * vk**2 + 0.00152 * vk**3
-        te  = sqrt(je**2 + 0.021**2 + 
+        vk = v - k
+        vke = np.sqrt(ve**2 + ke**2)
+        t = j + 0.0293 + 0.38523 * vk - 0.01862 * vk**2 + 0.00152 * vk**3
+        te = np.sqrt(je**2 + 0.021**2 +
                    ((0.38523 - 2 * 0.01862 * vk + 3 * 0.00152 * vk**2) * vke)**2)
-        ts  = 'tor_vjk'
+        ts = 'tor_vjk'
         return (round(t, 3), round(te, 3), ts)
     
     
@@ -39,29 +42,29 @@ def calctmagv(v, j, k, ve = None, je = None, ke = None):
         bd = np.isnan(ke)
         ke[bd] = 0.0
         
-        t   = np.zeros(len(j))
-        te  = np.zeros(len(j))
+        t  = np.zeros(len(j))
+        te = np.zeros(len(j))
         t.fill(np.nan)
         te.fill(np.nan)
-        ts  = len(j) * [None]
-        ts  = np.array(ts)
+        ts = len(j) * [None]
+        ts = np.array(ts)
         
-        vk  = np.zeros(len(j))
+        vk = np.zeros(len(j))
         vke = np.zeros(len(j))
 
-        idx  = np.where(~(np.isnan(v + j + k)))
+        idx = np.where(~(np.isnan(v + j + k)))
         nidx = np.shape(idx)[1]
         if nidx <= 0:
             return (t, te, ts)
         
-        vk[idx]  = v[idx]  - k[idx]
+        vk[idx] = v[idx]  - k[idx]
         vke[idx] = np.sqrt(ve[idx]**2 + ke[idx]**2)
-        t[idx]   = j[idx] + 0.0293 + 0.38523 * vk[idx] - 0.01862 * vk[idx]**2 + \
+        t[idx]  = j[idx] + 0.0293 + 0.38523 * vk[idx] - 0.01862 * vk[idx]**2 + \
                    0.00152 * vk[idx]**3
-        te[idx]  = np.sqrt(je[idx]**2 + 0.021**2 +
+        te[idx] = np.sqrt(je[idx]**2 + 0.021**2 +
                            ((0.38523 - 2 * 0.01862 * vk[idx] + 
                              3 * 0.00152 * vk[idx]**2) * vke[idx])**2)
-        ts[idx]  = 'tor_vjk'
+        ts[idx] = 'tor_vjk'
         return (np.round(t, 3), np.round(te, 3), ts)
 
     
@@ -87,12 +90,12 @@ def calctmagbphot(b, j, k, be = None, je = None, ke = None):
         if ke is None:
             ke = 0.0
 
-        bk  = b - k
+        bk = b - k
         bke = sqrt(be**2 + ke**2)
-        t   = j + 0.0381 + 0.31926 * bk - 0.01780 * bk**2 + 0.00178 * bk**3
-        te  = sqrt(je**2 + 0.020**2 +
+        t  = j + 0.0381 + 0.31926 * bk - 0.01780 * bk**2 + 0.00178 * bk**3
+        te = sqrt(je**2 + 0.020**2 +
                    ((0.31926 - 2 * 0.01780 * bk + 3 * 0.00178 * bk**2) * bke)**2)
-        ts  = 'tor_bpjk'
+        ts = 'tor_bpjk'
         return (round(t, 3), round(te, 3), ts)
     
     
@@ -111,25 +114,25 @@ def calctmagbphot(b, j, k, be = None, je = None, ke = None):
         bd = np.isnan(ke)
         ke[bd] = 0.0
         
-        t   = np.zeros(len(j))
-        te  = np.zeros(len(j))
+        t  = np.zeros(len(j))
+        te = np.zeros(len(j))
         t.fill(np.nan)
         te.fill(np.nan)
-        ts  = len(j) * [None]
-        ts  = np.array(ts)
+        ts = len(j) * [None]
+        ts = np.array(ts)
         
-        bk  = np.zeros(len(j))
+        bk = np.zeros(len(j))
         bke = np.zeros(len(j))
 
         idx = np.where(~(np.isnan(b + j + k)))
-        bk[idx]  = b[idx]  - k[idx]
+        bk[idx] = b[idx]  - k[idx]
         bke[idx] = np.sqrt(be[idx]**2 + ke[idx]**2)
-        t[idx]   = j[idx] + 0.0381 + 0.31926 * bk[idx] - 0.01780 * bk[idx]**2 + \
+        t[idx]  = j[idx] + 0.0381 + 0.31926 * bk[idx] - 0.01780 * bk[idx]**2 + \
                    0.00178 * bk[idx]**3
-        te[idx]  = np.sqrt(je[idx]**2 + 0.020**2 +
+        te[idx] = np.sqrt(je[idx]**2 + 0.020**2 +
                            ((0.31926 - 2 * 0.01780 * bk[idx] + 
                              3 * 0.00178 * bk[idx]**2) * bke[idx])**2)
-        ts  = 'tor_bpjk'
+        ts = 'tor_bpjk'
         return (np.round(t, 3), np.round(te, 3), ts)
 
     
@@ -155,12 +158,12 @@ def calctmagb(b, j, k, be = None, je = None, ke = None):
         if ke is None:
             ke = 0.0
 
-        bk  = b - k
+        bk = b - k
         bke = sqrt(be**2 + ke**2)
-        t   = j + 0.0407 +  0.29688 * bk - 0.02313 * bk**2 + 0.00226 * bk**3
-        te  = sqrt(je**2 + 0.031**2 +
+        t  = j + 0.0407 +  0.29688 * bk - 0.02313 * bk**2 + 0.00226 * bk**3
+        te = sqrt(je**2 + 0.031**2 +
                    ((0.29688 - 2 * 0.02313 * bk + 3 * 0.00226 * bk**2) * bke)**2)
-        ts  = 'tor_bjk'
+        ts = 'tor_bjk'
         return (round(t, 3), round(te, 3), ts)
     
     
@@ -179,25 +182,25 @@ def calctmagb(b, j, k, be = None, je = None, ke = None):
         bd = np.isnan(ke)
         ke[bd] = 0.0
         
-        t   = np.zeros(len(j))
-        te  = np.zeros(len(j))
+        t  = np.zeros(len(j))
+        te = np.zeros(len(j))
         t.fill(np.nan)
         te.fill(np.nan)
-        ts  = len(j) * [None]
-        ts  = np.array(ts)
+        ts = len(j) * [None]
+        ts = np.array(ts)
         
-        bk  = np.zeros(len(j))
+        bk = np.zeros(len(j))
         bke = np.zeros(len(j))
 
         idx = np.where(~(np.isnan(b + j + k)))
-        bk[idx]  = b[idx]  - k[idx]
+        bk[idx] = b[idx]  - k[idx]
         bke[idx] = np.sqrt(be[idx]**2 + ke[idx]**2)
-        t[idx]   = j[idx] + 0.0407 + 0.29688 * bk[idx] - 0.02313 * bk[idx]**2 + \
+        t[idx]  = j[idx] + 0.0407 + 0.29688 * bk[idx] - 0.02313 * bk[idx]**2 + \
                    0.00226 * bk[idx]**3
-        te[idx]  = sqrt(je[idx]**2 + 0.031**2 +
+        te[idx] = sqrt(je[idx]**2 + 0.031**2 +
                         ((0.29688 - 2 * 0.02313 * bk[idx] + 
                           3 * 0.00226 * bk[idx]**2) * bke[idx])**2)
-        ts  = 'tor_bjk'
+        ts = 'tor_bjk'
         return (np.round(t, 3), np.round(te, 3), ts)
 
     
@@ -220,7 +223,7 @@ def calctmagjhk(j, k, je = None, ke = None):
             je = 0.0
         if ke is None:
             ke = 0.0
-        t  = None
+        t = None
         te = None
         ts = None
         
@@ -228,11 +231,11 @@ def calctmagjhk(j, k, je = None, ke = None):
         jke = sqrt(je**2 + ke**2)
         
         if jk <= 0.70:
-            t  = j + 0.0563 + 1.89115 * jk - 1.74299 * jk**2 + 1.22163 * jk**3
+            t = j + 0.0563 + 1.89115 * jk - 1.74299 * jk**2 + 1.22163 * jk**3
             te = sqrt(je**2 + 0.008**2 +
                       ((1.89115 - 2 * 1.74299 * jk + 3 * 1.22163 * jk**2) * jke)**2)
         elif jk > 0.7 and jk <= 1.0:
-            t  = j + 147.811 - 545.64 * jk + 668.453 * jk**2 - 269.372 * jk**3
+            t = j + 147.811 - 545.64 * jk + 668.453 * jk**2 - 269.372 * jk**3
             te = sqrt(je**2 + 0.17**2 +
                       ((-545.64 + 2 * 668.453 * jk - 3 * 269.372 * jk**2) * jke)**2)
         elif jk > 1.0:
@@ -254,54 +257,54 @@ def calctmagjhk(j, k, je = None, ke = None):
         bd = np.isnan(ke)
         ke[bd] = 0.0
         
-        t   = np.zeros(len(j))
-        te  = np.zeros(len(j))
+        t  = np.zeros(len(j))
+        te = np.zeros(len(j))
         t.fill(np.nan)
         te.fill(np.nan)
-        ts  = len(j) * [None]
-        ts  = np.array(ts)
+        ts = len(j) * [None]
+        ts = np.array(ts)
         
-        jk  = np.zeros(len(j))
+        jk = np.zeros(len(j))
         jke = np.zeros(len(j))
 
         jk = j - k
         mask = ~np.isnan(jk)
-        gd   = np.where(mask)
+        gd  = np.where(mask)
         mask[gd] = (jk[gd] <= 0.7)
-        gd   = np.where(mask)
+        gd  = np.where(mask)
         ngd = np.shape(gd)[1]
         if ngd > 0:
-            jk[gd]  = j[gd] - k[gd]
+            jk[gd] = j[gd] - k[gd]
             jke[gd] = np.sqrt(je[gd]**2 + ke[gd]**2)
-            t[gd]   = j[gd] + 0.0563 + 1.89115 * jk[gd] - 1.74299 * jk[gd]**2 + \
+            t[gd]  = j[gd] + 0.0563 + 1.89115 * jk[gd] - 1.74299 * jk[gd]**2 + \
                       1.22163 * jk[gd]**3
-            te[gd]  = np.sqrt(je[gd]**2 + 0.008**2 +
+            te[gd] = np.sqrt(je[gd]**2 + 0.008**2 +
                               ((1.89115 - 2 * 1.74299 * jk[gd] + 
                                 3 * 1.22163 * jk[gd]**2) * jke[gd])**2)
-            ts[gd]  = 'tor_jhk'
+            ts[gd] = 'tor_jhk'
         
         mask = ~np.isnan(jk)
-        gd   = np.where(mask)
+        gd  = np.where(mask)
         mask[gd] = (jk[gd] > 0.7 & jk <= 1.0)
-        gd   = np.where(mask)
+        gd  = np.where(mask)
         ngd = np.shape(gd)[1]
         if ngd > 0:
-            jk[gd]  = j[gd] - k[gd]
+            jk[gd] = j[gd] - k[gd]
             jke[gd] = np.sqrt(je[gd]**2 + ke[gd]**2)
-            t[gd]   = j[gd] + 147.811 - 545.64 * jk[gd] + 668.453 * jk[gd]**2 - \
+            t[gd]  = j[gd] + 147.811 - 545.64 * jk[gd] + 668.453 * jk[gd]**2 - \
                       269.372 * jk[gd]**3
-            te[gd]  = np.sqrt(je[gd]**2 + 0.17**2 +
+            te[gd] = np.sqrt(je[gd]**2 + 0.17**2 +
                               ((-545.64 + 2 * 668.453 * jk[gd] - \
                                 3 * 269.372 * jk[gd]**2) * jke[gd])**2)
-            ts[gd]  = 'tor_jhk'
+            ts[gd] = 'tor_jhk'
 
         mask = ~np.isnan(jk)
-        gd   = np.where(mask)
+        gd  = np.where(mask)
         mask[gd] = (jk[gd] > 1.0)
-        gd   = np.where(mask)
+        gd  = np.where(mask)
         ngd = np.shape(gd)[1]
         if ngd > 0:
-            t[gd]  = j[gd] + 1.75
+            t[gd] = j[gd] + 1.75
             te[gd] = 1.0        
             ts[gd] = 'tor_jhk'
 
@@ -330,12 +333,12 @@ def calctmagvjh(v, j, h, ve = None, je = None, he = None):
         if he is None or np.isnan(he):
             he = 0.0
 
-        jh  = j - h
+        jh = j - h
         jhe = sqrt(je**2 + he**2)
-        t   = v - 0.1140 - 1.96827 * jh + 0.75955 * jh**2 - 0.28408 * jh**3
-        te  = sqrt(ve**2 + 0.063**2 + 
+        t  = v - 0.1140 - 1.96827 * jh + 0.75955 * jh**2 - 0.28408 * jh**3
+        te = sqrt(ve**2 + 0.063**2 + 
                    ((-1.96827 + 2 * 0.75955 * jh - 3 * 0.28408 * jh**2) * jhe)**2)
-        ts  = 'tor_vjh'
+        ts = 'tor_vjh'
         
         if (v - t) > 1.5:
             t = v - 1.5
@@ -360,35 +363,35 @@ def calctmagvjh(v, j, h, ve = None, je = None, he = None):
         bd = np.isnan(he)
         he[bd] = 0.0
         
-        t   = np.zeros(len(j))
-        te  = np.zeros(len(j))
+        t  = np.zeros(len(j))
+        te = np.zeros(len(j))
         t.fill(np.nan)
         te.fill(np.nan)
-        ts  = len(j) * [None]
-        ts  = np.array(ts)
+        ts = len(j) * [None]
+        ts = np.array(ts)
         
-        jh  = np.zeros(len(j))
+        jh = np.zeros(len(j))
         jhe = np.zeros(len(j))
 
-        idx  = np.where(~(np.isnan(v + j + h)))
+        idx = np.where(~(np.isnan(v + j + h)))
         nidx = np.shape(idx)[1]
         if nidx <= 0:
             return (t, te, ts)
         
-        jh[idx]  = j[idx]  - h[idx]
+        jh[idx] = j[idx]  - h[idx]
         jhe[idx] = np.sqrt(ve[idx]**2 + he[idx]**2)
-        t[idx]   = v[idx] - 0.1140 + - 1.96827 * jh[idx] + 0.75955 * jh[idx]**2 - \
+        t[idx]  = v[idx] - 0.1140 + - 1.96827 * jh[idx] + 0.75955 * jh[idx]**2 - \
                    0.28408 * jh[idx]**3
-        te[idx]  = np.sqrt(ve[idx]**2 + 0.063**2 +
+        te[idx] = np.sqrt(ve[idx]**2 + 0.063**2 +
                            ((-1.96827 + 2 * 0.75955 * jh[idx] - 
                              3 * 0.28408 * jh[idx]**2) * jhe[idx])**2)
-        ts[idx]  = 'tor_vjh'
+        ts[idx] = 'tor_vjh'
         
         bd = np.where(((~np.isnan(v)) & (np.isnan(t))) | 
                       ((v - t) > 1.5))
         nbd = np.shape(bd)[1]
         if nbd > 0:
-            t[bd]  = v[bd] - 1.5
+            t[bd] = v[bd] - 1.5
             te[bd] = 1.5
             ts[bd] = 'voffset'
         
@@ -415,12 +418,12 @@ def calctmagjh(j, h, je = None, he = None):
         if he is None or np.isnan(he):
             he = 0.0
 
-        jh  = j - h
+        jh = j - h
         jhe = sqrt(je**2 + he**2)
-        t   = j + 0.1561 + 1.93384 * jh - 1.49220 * jh**2 - 0.99995 * jh**3
-        te  = sqrt(je**2 + 0.040**2 +
+        t  = j + 0.1561 + 1.93384 * jh - 1.49220 * jh**2 - 0.99995 * jh**3
+        te = sqrt(je**2 + 0.040**2 +
                    ((1.93384 - 2 * 1.49220 * jh - 3 * 0.99995 * jh**2) * jhe)**2)
-        ts  = 'tor_jh'
+        ts = 'tor_jh'
         
         if (t - j) > 0.5 + 0.8:    # offset + sigma for t - j
             t = j + 0.4
@@ -441,35 +444,35 @@ def calctmagjh(j, h, je = None, he = None):
         bd = np.isnan(he)
         he[bd] = 0.0
         
-        t   = np.zeros(len(j))
-        te  = np.zeros(len(j))
+        t  = np.zeros(len(j))
+        te = np.zeros(len(j))
         t.fill(np.nan)
         te.fill(np.nan)
-        ts  = len(j) * [None]
-        ts  = np.array(ts)
+        ts = len(j) * [None]
+        ts = np.array(ts)
         
-        jh  = np.zeros(len(j))
+        jh = np.zeros(len(j))
         jhe = np.zeros(len(j))
 
-        idx  = np.where(~(np.isnan(j + h)))
+        idx = np.where(~(np.isnan(j + h)))
         nidx = np.shape(idx)[1]
         if nidx <= 0:
             return (t, te, ts)
         
-        jh[idx]  = j[idx]  - h[idx]
+        jh[idx] = j[idx]  - h[idx]
         jhe[idx] = np.sqrt(je[idx]**2 + he[idx]**2)
-        t[idx]   = j[idx] + 0.1561 + 1.93384 * jh[idx] - 1.49220 * jh[idx]**2 - \
+        t[idx]  = j[idx] + 0.1561 + 1.93384 * jh[idx] - 1.49220 * jh[idx]**2 - \
                    0.99995 * jh[idx]**3
-        te[idx]  = np.sqrt(je[idx]**2 + 0.040**2 +
+        te[idx] = np.sqrt(je[idx]**2 + 0.040**2 +
                            ((1.93384 - 2 * 1.49220 * jh[idx] - \
                              3 * 0.99995 * jh[idx]**2) * jhe[idx])**2)
-        ts[idx]  = 'tor_jh'
+        ts[idx] = 'tor_jh'
         
 #         bd = np.where(((~np.isnan(j)) & (np.isnan(h))) | 
 #                       ((t - j) > 0.4 + 0.5))
 #         nbd = np.shape(bd)[1]
 #         if nbd > 0:
-#             t[bd]  = j[bd] + 0.4
+#             t[bd] = j[bd] + 0.4
 #             te[bd] = 0.5
 #             ts[bd] = 'joffset'
         
@@ -524,7 +527,7 @@ def contam(x0, y0, xb, yb, s, dx0 = None, dy0 = None):
         sq2 = sqrt(2)
         contx = erf((xb + x0) / (sq2 * s)) + erf((xb - x0) / (sq2 * s))
         conty = erf((yb + y0) / (sq2 * s)) + erf((yb - y0) / (sq2 * s))
-        cont  = 0.25 * contx * conty
+        cont = 0.25 * contx * conty
         
         dcont = None
         if dx0 is not None or dy0 is not None:
@@ -545,7 +548,7 @@ def contam(x0, y0, xb, yb, s, dx0 = None, dy0 = None):
         sq2 = sqrt(2)
         contx = npspec.erf((xb + x0) / (sq2 * s)) + npspec.erf((xb - x0) / (sq2 * s))
         conty = npspec.erf((yb + y0) / (sq2 * s)) + npspec.erf((yb - y0) / (sq2 * s))
-        cont  = 0.25 * contx * conty
+        cont = 0.25 * contx * conty
     
         dcont = None
         if dx0 is not None or dy0 is not None:
@@ -609,33 +612,33 @@ def aperture(tmag, tmage = None):
         if tmage is None:
             tmage = 0.25
         
-        npix  = None
+        npix = None
         npixe = None
 
         if tmag <= 4.0:
-            npix  = 274.2898 - 77.7918 * 4.0 + 7.7410 * 4.0**2 - 0.2592 * 4.0**3
+            npix = 274.2898 - 77.7918 * 4.0 + 7.7410 * 4.0**2 - 0.2592 * 4.0**3
             npixe = abs((77.7918 + 2 * 7.7410 * 4.0 - 3 * 0.2592 * 4.0**2) * tmage)
         else:
-            npix  = (274.2898 - 77.7918 * tmag + 
+            npix = (274.2898 - 77.7918 * tmag + 
                      7.7410 * tmag**2 - 0.2592 * tmag**3)
             npixe = abs(77.7918 + 2 * 7.7410 * tmag - 3 * 0.2592 * tmag**2) * tmage
             if npix < 1:
-                npix  = 1
+                npix = 1
                 npixe = 0.05
         
         # square of the same area - this will underestimate the contaminating flux
-        aper1  = sqrt(npix)
+        aper1 = sqrt(npix)
         apere1 = abs(0.5 / sqrt(npix) * npixe)
         
         # surrounding square - area by factor 4 / pi bigger than circle
         # this will overestimate the contaminating flux
-        aper2  = 2 * sqrt(npix / pi)
+        aper2 = 2 * sqrt(npix / pi)
         apere2 = 2 * sqrt(1.0 / (npix * pi)) * npixe
         
         # average over surrounding square and square of the same area
         # this should give a more realistic estimate
-        aper   = (aper1 + aper2) / 2
-        apere  = (apere1 + apere2) / 2
+        aper  = (aper1 + aper2) / 2
+        apere = (apere1 + apere2) / 2
         
         return (aper, apere)
     
@@ -650,17 +653,17 @@ def aperture(tmag, tmage = None):
             bd = np.where(np.isnan(tmage))
             tmage[bd] = 0.25
             
-        bd   = np.where(tmag <= 4.0)
-        nbd  = np.shape(bd)[1]
+        bd  = np.where(tmag <= 4.0)
+        nbd = np.shape(bd)[1]
         if nbd > 0:
-            npix[bd]  = 274.2898 - 77.7918 * 4.0 + 7.7410 * 4.0**2 - 0.2592 * 4.0**3
+            npix[bd] = 274.2898 - 77.7918 * 4.0 + 7.7410 * 4.0**2 - 0.2592 * 4.0**3
             npixe[bd] = np.abs((77.7918 + 2 * 7.7410 * 4.0 - 3 * 0.2592 * 4.0**2) *
                                tmage[bd])
             
-        gd   = np.where(tmag > 4.0)
-        ngd  = np.shape(gd)[1]
+        gd  = np.where(tmag > 4.0)
+        ngd = np.shape(gd)[1]
         if ngd > 0:
-            npix[gd]  = (274.2898 - 77.7918 * tmag[gd] + 
+            npix[gd] = (274.2898 - 77.7918 * tmag[gd] + 
                          7.7410 * tmag[gd]**2 - 0.2592 * tmag[gd]**3)
             npixe[gd] = np.abs(77.7918 + 2 * 7.7410 * tmag[gd] - 3 * 0.2592 * tmag[gd]**2) \
                         * tmage
@@ -669,7 +672,7 @@ def aperture(tmag, tmage = None):
         bd = np.where(npixe < 0.25)
         npixe[bd] = 0.25
         
-        aper  = np.sqrt(npix)
+        aper = np.sqrt(npix)
         apere = np.abs(0.5 / aper * npixe)
         return (aper, apere)
 
@@ -687,12 +690,12 @@ def haversine(ra1, dec1, ra2, dec2,
     # the same call signature no matter if called with scalars or arrays
     def schaversine(ra1, dec1, ra2, dec2, 
                     dra1 = None, ddec1 = None, dra2 = None, ddec2 = None):
-        ras  = ra1  * deg2rad
-        raf  = ra2  * deg2rad
+        ras = ra1  * deg2rad
+        raf = ra2  * deg2rad
         decs = dec1 * deg2rad
         decf = dec2 * deg2rad
     
-        dra  = raf - ras
+        dra = raf - ras
         ddec = decf - decs
         delta = 2 * asin(sqrt(sin(ddec / 2)**2 + 
                               cos(decs) * cos(decf) * sin(dra / 2)**2))
@@ -701,10 +704,10 @@ def haversine(ra1, dec1, ra2, dec2,
         ddelta = None
         if (dra1 is not None or ddec1 is not None or 
             dra2 is not None or ddec2 is not None):
-            tmp   = sin(0.5 * (dec2 - dec1))**2 * cos(ra1) * cos(ra2) + \
+            tmp  = sin(0.5 * (dec2 - dec1))**2 * cos(ra1) * cos(ra2) + \
                     sin(0.5 * (ra2 - ra1))**2
             denom = 4 * (1 - tmp) * tmp
-            ddelta  = 0.0
+            ddelta = 0.0
             if dra1 is not None:
                 ddelta += (cos(dec1 - dec2) * cos(ra2) * sin(ra1) - 
                            cos(ra1) * sin(ra2))**2 / denom * (dra1 * deg2rad)**2
@@ -725,12 +728,12 @@ def haversine(ra1, dec1, ra2, dec2,
 
     def nphaversine(ra1, dec1, ra2, dec2,
                     dra1 = None, ddec1 = None, dra2 = None, ddec2 = None):
-        ras  = ra1 * deg2rad
-        raf  = ra2 * deg2rad
+        ras = ra1 * deg2rad
+        raf = ra2 * deg2rad
         decs = dec1 * deg2rad
         decf = dec2 * deg2rad
     
-        dra  = raf - ras
+        dra = raf - ras
         ddec = decf - decs
         tmp1 = np.sin(ddec / 2)**2
         tmp2 = np.cos(decs) * np.cos(decf) * np.sin(dra / 2)**2
@@ -740,7 +743,7 @@ def haversine(ra1, dec1, ra2, dec2,
         ddelta = None
         if (dra1 is not None or ddec1 is not None or 
             dra2 is not None or ddec2 is not None):
-            tmp   = sin(0.5 * (dec2 - dec1))**2 * cos(ra1) * cos(ra2) + \
+            tmp  = sin(0.5 * (dec2 - dec1))**2 * cos(ra1) * cos(ra2) + \
                     sin(0.5 * (ra2 - ra1))**2
             denom = 4 * (1 - tmp) * tmp
             ddelta = np.array(len(ra1) * [0.0])
